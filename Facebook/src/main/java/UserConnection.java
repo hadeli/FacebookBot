@@ -121,32 +121,25 @@ public class UserConnection {
                         System.out.println("Il y a " + posts.size() + " post dispos");
                         for(Post post : posts)
                         {
-                            System.out.println(post.getMessage());
-                            connectionFb.facebookClient.publish(post.getId()+"/likes", Boolean.class);
+                            List<Post.Action> testAction = post.getActions();
+                            for(Post.Action action : testAction)
+                            {
+                                System.out.println(action.getName());
+                                if(action.getName().equals("Like")) {
+                                    System.out.println(post.getMessage());
+                                    connectionFb.facebookClient.publish(post.getId()+"/likes", Boolean.class);
+                                }
+
+
+                            }
                         }
                     }
-
-
-                    /* try {
-                    sleep(10000);
-                } catch (InterruptedException e) {
-                e.printStackTrace();
-            }*//*
-                *//* for(Post.Likes likes : idLiked)
-                {
-                    for(NamedFacebookType likeses : likes.getData())
-                    {
-                        userCoMe.connectionFb.facebookClient.publish(post.getId()+"/likes", Boolean.class)
-                    }
-                }*/
-
+                }
             }
-
-
         }
     }
 
-    }
+
 
     public static void main (String[] argv) {
 
