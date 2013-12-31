@@ -27,8 +27,8 @@ public class UserConnection {
 
     public void likePage(String pageName) {
 
-        String idBibune = connectionFb.facebookClient.fetchObject("Bibune", Page.class).getId();
-        Connection<Post> pagePost = connectionFb.facebookClient.fetchConnection("Bibune/posts", Post.class);
+        String idBibune = connectionFb.facebookClient.fetchObject(pageName, Page.class).getId();
+        Connection<Post> pagePost = connectionFb.facebookClient.fetchConnection(pageName + "/posts", Post.class);
         System.out.println("Connection établi");
         System.out.println("On commence par les posts");
         for(List<Post> posts : pagePost)
@@ -40,7 +40,7 @@ public class UserConnection {
                 System.out.println("    C'est fait");
             }
         }
-        Connection<Photo> pagePicture = connectionFb.facebookClient.fetchConnection("Bibune/photos", Photo.class);
+        Connection<Photo> pagePicture = connectionFb.facebookClient.fetchConnection(pageName+"/photos", Photo.class);
         System.out.println("On continue par les photos");
         for(List<Photo> photos : pagePicture)
         {
@@ -91,7 +91,7 @@ public class UserConnection {
             }
         }*/
 
-        Connection<Post> pagePictures = connectionFb.facebookClient.fetchConnection("Bibune/timeline", Post.class);
+        Connection<Post> pagePictures = connectionFb.facebookClient.fetchConnection(pageName+"/timeline", Post.class);
         System.out.println("On continue par les photos");
         for(List<Post> photos : pagePictures)
         {
@@ -105,13 +105,38 @@ public class UserConnection {
 
     }
 
-    public static void likeUsers(String userName) {
+    public static boolean likePost (Post post) {
+
+        List<Post.Action> testAction = post.getActions();
+        for(Post.Action action : testAction)
+        {
+            System.out.println(action.getName());
+            if(action.getName().equals("Like"))
+            {
+                System.out.println(post.getMessage());
+                try
+                {
+                    connectionFb.facebookClient.publish(post.getId()+"/likes", Boolean.class);
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static void likeUsers(String userName)
+    {
         for (List<User> friends : myFriends)
         {
             for(User friend : friends)
             {
 
-                if(friend.getName().contains(userName)) {
+                if(friend.getName().contains(userName))
+                {
                     System.out.println(friend.getName());
                     System.out.println("    J'ai trouvé. Id : " + friend.getId());
                     Connection<Post> yourPosts = connectionFb.facebookClient.fetchConnection(friend.getId() + "/posts", Post.class);
@@ -121,17 +146,9 @@ public class UserConnection {
                         System.out.println("Il y a " + posts.size() + " post dispos");
                         for(Post post : posts)
                         {
-                            List<Post.Action> testAction = post.getActions();
-                            for(Post.Action action : testAction)
-                            {
-                                System.out.println(action.getName());
-                                if(action.getName().equals("Like")) {
-                                    System.out.println(post.getMessage());
-                                    connectionFb.facebookClient.publish(post.getId()+"/likes", Boolean.class);
-                                }
+                            likePost(post);
 
 
-                            }
                         }
                     }
                 }
@@ -141,15 +158,9 @@ public class UserConnection {
 
 
 
-    public static void main (String[] argv) {
 
+    public static void main (String[] argv)
+    {
         likeUsers("Yasmine");
-
-
-
-
-
-
-
     }
 }
