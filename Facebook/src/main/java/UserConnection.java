@@ -12,31 +12,21 @@ import static java.lang.Thread.sleep;
 public class UserConnection {
 
     public static ConnectionFb connectionFb = ConnectionFb.getInstance("CAACEdEose0cBAGsbJva91MK9U8dhHUgvZAgZB5C5uskajheAPeRUhGu0W7XRqDu6jmyHMQ7NRvZAanVJPDE53vuNmKdVWJiHZAAyJjRijSwXdruasZCFB6RxlZBo2JlY4XAin0ryt3Q4NJWT0xZAkQcY0KICoIrEBHMxc7h83V6d9O6PeBuHpsdvZBmIxQQRoaYZD");
-    static User me;
-    static Connection<User> myFriends;
+    static User me = connectionFb.facebookClient.fetchObject("me", User.class);;
+    static Connection<User> myFriends = connectionFb.facebookClient.fetchConnection("me/friends", User.class);;
     static Connection<Page> myPage;
 
 
+
+
     public UserConnection() {
-        me = connectionFb.facebookClient.fetchObject("me", User.class);
-        myFriends = connectionFb.facebookClient.fetchConnection("me/friends", User.class);
-        //myPage = connectionFb.facebookClient.fetchConnectionPage("Bibune", Page.class);
+
 
     }
 
-    public static void main (String[] argv) {
 
-        List<Post.Likes> idLiked = new ArrayList<Post.Likes>();
+    public void likePage(String pageName) {
 
-
-
-        UserConnection userCoMe = new UserConnection();
-        System.out.println(userCoMe.me.getId());
-        /*for(List<Page> pages : myPage) {
-            for(Page page : pages) {
-                page.
-            }
-        }*/
         String idBibune = connectionFb.facebookClient.fetchObject("Bibune", Page.class).getId();
         Connection<Post> pagePost = connectionFb.facebookClient.fetchConnection("Bibune/posts", Post.class);
         System.out.println("Connection établi");
@@ -46,7 +36,7 @@ public class UserConnection {
             for(Post post : posts)
             {
                 System.out.println("    on doit like " + post.getName());
-                userCoMe.connectionFb.facebookClient.publish(post.getId()+"/likes", Boolean.class);
+                this.connectionFb.facebookClient.publish(post.getId()+"/likes", Boolean.class);
                 System.out.println("    C'est fait");
             }
         }
@@ -57,7 +47,7 @@ public class UserConnection {
             for(Photo photo : photos)
             {
                 System.out.println("    on doit like " + photo.getName());
-                userCoMe.connectionFb.facebookClient.publish(photo.getId()+"/likes", Boolean.class);
+                this.connectionFb.facebookClient.publish(photo.getId()+"/likes", Boolean.class);
                 System.out.println("    C'est fait");
             }
         }
@@ -108,20 +98,23 @@ public class UserConnection {
             for(Post photo : photos)
             {
                 System.out.println("    on doit like " + photo.getName());
-                userCoMe.connectionFb.facebookClient.publish(photo.getId()+"/likes", Boolean.class);
+                this.connectionFb.facebookClient.publish(photo.getId()+"/likes", Boolean.class);
                 System.out.println("    C'est fait");
             }
         }
 
-        /*for (List<User> friends : myFriends)
+    }
+
+    public static void likeUsers(String userName) {
+        for (List<User> friends : myFriends)
         {
             for(User friend : friends)
             {
 
-                if(friend.getName().contains("Antonin")) {
+                if(friend.getName().contains(userName)) {
                     System.out.println(friend.getName());
                     System.out.println("    J'ai trouvé. Id : " + friend.getId());
-                    Connection<Post> yourPosts = userCoMe.connectionFb.facebookClient.fetchConnection(friend.getId() + "/posts", Post.class);
+                    Connection<Post> yourPosts = connectionFb.facebookClient.fetchConnection(friend.getId() + "/posts", Post.class);
                     System.out.println("        La connection est etabli");
                     for(List<Post> posts : yourPosts)
                     {
@@ -129,33 +122,39 @@ public class UserConnection {
                         for(Post post : posts)
                         {
                             System.out.println(post.getMessage());
-                            userCoMe.connectionFb.facebookClient.publish(post.getId()+"/likes", Boolean.class);
-                            idLiked.add(post.getLikes());
-                            userCoMe.connectionFb.facebookClient.publish(post.getId()+"/likes", Boolean.class);
-                            break;
+                            connectionFb.facebookClient.publish(post.getId()+"/likes", Boolean.class);
                         }
-                        break;
                     }
 
 
-                   *//* try {
-                        sleep(10000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }*//*
-                   *//* for(Post.Likes likes : idLiked)
+                    /* try {
+                    sleep(10000);
+                } catch (InterruptedException e) {
+                e.printStackTrace();
+            }*//*
+                *//* for(Post.Likes likes : idLiked)
+                {
+                    for(NamedFacebookType likeses : likes.getData())
                     {
-                        for(NamedFacebookType likeses : likes.getData())
-                        {
-                            userCoMe.connectionFb.facebookClient.publish(post.getId()+"/likes", Boolean.class)
-                        }
-                    }*//*
-
-                }
-
+                        userCoMe.connectionFb.facebookClient.publish(post.getId()+"/likes", Boolean.class)
+                    }
+                }*/
 
             }
-        }*/
+
+
+        }
+    }
+
+    }
+
+    public static void main (String[] argv) {
+
+        likeUsers("Yasmine");
+
+
+
+
 
 
 
